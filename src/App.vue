@@ -1,20 +1,26 @@
 <template>
   <v-app>
-    <v-toolbar app>
-      <v-toolbar-title class="headline text-uppercase">
-        <span>Vuetify</span>
-        <span class="font-weight-light">MATERIAL DESIGN</span>
-      </v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-btn
-        flat
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>open_in_new</v-icon>
+    <v-bottom-nav :active.sync="bottomNav" app :value="true" fixed>
+      <v-btn color="teal" to="/" flat value="home">
+        <span>Home</span>
+        <v-icon>home</v-icon>
       </v-btn>
-    </v-toolbar>
+
+      <v-btn color="teal" to="/work" flat value="work">
+        <span>Work</span>
+        <v-icon>work</v-icon>
+      </v-btn>
+
+      <v-btn color="teal" to="/messages" flat value="messages">
+        <span>Messages</span>
+        <v-icon>message</v-icon>
+      </v-btn>
+
+      <v-btn color="teal" to="/account" flat value="account">
+        <span>Account</span>
+        <v-icon>person</v-icon>
+      </v-btn>
+    </v-bottom-nav>
 
     <v-content>
       <router-view/>
@@ -23,13 +29,12 @@
 </template>
 
 <script>
-
 export default {
-  name: 'App',
-  data () {
+  name: "App",
+  data() {
     return {
-      //
-    }
+      bottomNav: "home"
+    };
   }
-}
+};
 </script>
