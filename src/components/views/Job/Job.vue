@@ -122,7 +122,7 @@
                   <v-layout align-center justify-center>
                     <v-flex xs6 class="text-xs-center">
                       <font class="headline">Your Bid is for</font>
-                      <v-text-field prefix="ETH" :suffix="textSuffix"></v-text-field>
+                      <v-text-field v-model="ethBid" prefix="ETH" :suffix="textSuffix"></v-text-field>
                     </v-flex>
                   </v-layout>
 
@@ -133,6 +133,7 @@
 
                 <v-stepper-content step="2">
                   <v-textarea
+                    v-model="personalIntroduction"
                     name="input-7-4"
                     label="Personal introduction"
                     placeholder="Introduce yourself, highlight your skills and experience, and tell the client exactly why they should hire you!"
@@ -182,7 +183,7 @@ export default {
     },
     submitProposalDialog: false,
     personalIntroduction: "",
-    ethBid: ""
+    ethBid: 0
   }),
   methods: {
     changeSubmitProposalDialog(n) {

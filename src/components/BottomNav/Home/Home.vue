@@ -16,8 +16,8 @@ export default {
   },
   data() {
     return {
-      isFreelancer: true,
-      isEmployer: false
+      isFreelancer: false,
+      isEmployer: true
     };
   }
 };
