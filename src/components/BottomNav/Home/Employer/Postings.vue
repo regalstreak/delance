@@ -11,7 +11,7 @@
             <v-flex xs6>
               <strong>{{ job.jobPaymentMode }}</strong>
             </v-flex>
-            <v-flex xs6 class="text-xs-right">{{ jobPostDate }}</v-flex>
+            <v-flex xs6 class="text-xs-right">{{ job.jobPostDate }}</v-flex>
           </v-layout>
 
           <v-flex xs12 justify-center align-center>Skill level - {{ job.jobSkillLevel }}</v-flex>
@@ -61,9 +61,7 @@
               <v-divider></v-divider>
               <v-stepper-step :complete="e1 > 3" step="3" color="teal">Skills</v-stepper-step>
               <v-divider></v-divider>
-              <v-stepper-step :complete="e1 > 4" step="4" color="teal">Freelancers</v-stepper-step>
-              <v-divider></v-divider>
-              <v-stepper-step :complete="e1 > 5" step="5" color="teal">Budget</v-stepper-step>
+              <v-stepper-step :complete="e1 > 4" step="4" color="teal">Budget</v-stepper-step>
               <v-divider></v-divider>
             </v-stepper-header>
 
@@ -75,7 +73,7 @@
                   v-model="newJob.jobDetail"
                   name="input-7-4"
                   label="Job details"
-                  placeholder="Please enter a descriptive job description for the job that the freelancers will "
+                  placeholder="Please enter a descriptive job description for the job that the freelancers will look at."
                 ></v-textarea>
 
                 <v-btn color="teal white--text" @click="e1 = 2">Next</v-btn>
@@ -83,29 +81,87 @@
                 <v-btn flat @click="changeAddProposal(false)">Back</v-btn>
               </v-stepper-content>
 
-              <v-stepper-content step="5">
-                <v-layout align-center justify-center>
-                  <v-flex xs6 class="text-xs-center">
-                    <font class="headline">Your budget for this job is</font>
-                    <v-text-field v-model="ethBid" prefix="ETH" :suffix="textSuffix"></v-text-field>
-                    pAU MONTHLY OR FIXED OR HOURLY
-                  </v-flex>
-                </v-layout>
-                <v-btn color="teal white--text" @click="e1 = 3">Next</v-btn>
+              <v-stepper-content step="2">
+                <v-menu>
+                  <v-btn slot="activator" color="teal" dark>Project status</v-btn>
 
-                <v-btn flat @click="e1 = 1">Back</v-btn>
+                  <v-list>
+                    <v-list-tile
+                      v-for="(item, i) in items"
+                      :key="i"
+                      @click="newJob.jobType = item.title"
+                    >
+                      <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                    </v-list-tile>
+                  </v-list>
+                </v-menu>
+
+                <div>
+                  <v-btn color="teal white--text" @click="e1 = 3">Next</v-btn>
+
+                  <v-btn flat @click="e1 = 1">Back</v-btn>
+                </div>
               </v-stepper-content>
 
               <v-stepper-content step="3">
+                <v-select v-model="selectedSkills" :items="skills" label="Skills required" multiple>
+                  <v-list-tile slot="prepend-item" ripple @click="toggle">
+                    <v-list-tile-action>
+                      <v-icon :color="selectedSkills.length > 0 ? 'indigo darken-4' : ''">{{ icon }}</v-icon>
+                    </v-list-tile-action>
+                  </v-list-tile>
+                  <v-divider slot="prepend-item" class="mt-2"></v-divider>
+                  <v-divider slot="append-item" class="mb-2"></v-divider>
+                </v-select>
+
+                <div>
+                  <v-menu>
+                    <v-btn slot="activator" color="teal" dark>Skill level required</v-btn>
+
+                    <v-list>
+                      <v-list-tile
+                        v-for="(item, i) in skillLevel"
+                        :key="i"
+                        @click="newJob.jobSkillLevel = item.title"
+                      >
+                        <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                      </v-list-tile>
+                    </v-list>
+                  </v-menu>
+                </div>
+
+                <v-btn color="teal white--text" @click="e1 = 4">Next</v-btn>
+
+                <v-btn flat @click="e1 = 2">Back</v-btn>
+              </v-stepper-content>
+
+              <v-stepper-content step="4">
                 <v-layout align-center justify-center>
                   <v-flex xs6 class="text-xs-center">
                     <font class="headline">Your budget for this job is</font>
                     <v-text-field v-model="ethBid" prefix="ETH" :suffix="textSuffix"></v-text-field>
                   </v-flex>
                 </v-layout>
-                <v-btn color="teal white--text" @click="e1 = 3">Next</v-btn>
 
-                <v-btn flat @click="e1 = 1">Back</v-btn>
+                <div class="text-xs-center">
+                  <v-menu>
+                    <v-btn slot="activator" color="teal" dark>Payment Mode</v-btn>
+
+                    <v-list>
+                      <v-list-tile
+                        v-for="(item, i) in paymentModes"
+                        :key="i"
+                        @click="newJob.jobPaymentMode = item.title"
+                      >
+                        <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                      </v-list-tile>
+                    </v-list>
+                  </v-menu>
+                </div>
+
+                <v-btn color="teal white--text" @click="e1 = 1">Submit</v-btn>
+
+                <v-btn flat @click="e1 = 3">Back</v-btn>
               </v-stepper-content>
             </v-stepper-items>
           </v-stepper>
@@ -142,6 +198,45 @@ export default {
         jobLookingToHire: 2,
         jobBudget: 0.003
       },
+      items: [
+        { title: "On-Going" },
+        { title: "Not Started" },
+        { title: "Completed" }
+      ],
+      skillLevel: [
+        { title: "Expert" },
+        { title: "High" },
+        { title: "Medium" },
+        { title: "Low" }
+      ],
+      paymentModes: [
+        { title: "Monthly" },
+        { title: "Hourly" },
+        { title: "Fixed" }
+      ],
+      skills: [
+        "JavaScript",
+        "Java",
+        "Python",
+        "Ruby",
+        "CSS",
+        "PHP",
+        "C++",
+        "C",
+        "Shell",
+        "C#",
+        "Objective-C",
+        "R",
+        "VimL",
+        "Go",
+        "Perl",
+        "CoffeeScript",
+        "TeX",
+        "Scala",
+        "Haskell",
+        "Emacs Lisp"
+      ],
+      selectedSkills: [],
       newJob: {
         jobTitle: "",
         jobPaymentMode: "Hourly",
@@ -168,6 +263,10 @@ export default {
     },
     changeAddProposal(n) {
       this.addProposal = n;
+    },
+    addJob() {
+      this.addProposal = false;
+      
     }
   }
 };
