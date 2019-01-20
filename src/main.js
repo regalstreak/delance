@@ -12,12 +12,12 @@ import 'firebase/firestore'
 Vue.config.productionTip = false
 
 firebase.initializeApp({
-  apiKey: "AIzaSyDxWyeNItVr8-XiRVu919c-rrbKdluUcM8",
-  authDomain: "delance-3f9d2.firebaseapp.com",
-  databaseURL: "https://delance-3f9d2.firebaseio.com",
-  projectId: "delance-3f9d2",
-  storageBucket: "delance-3f9d2.appspot.com",
-  messagingSenderId: "749098252178"
+  apiKey: "Firebase api key",
+  authDomain: "yourApp.firebaseapp.com",
+  databaseURL: "https://youtApp.firebaseio.com",
+  projectId: "projectID",
+  storageBucket: "bucket.appspot.com",
+  messagingSenderId: "0000000000"
 });
 
 export const db = firebase.firestore();
