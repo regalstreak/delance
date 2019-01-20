@@ -5,6 +5,10 @@ import Work from './components/BottomNav/Work/Work.vue'
 import Messages from './components/BottomNav/Messages/Messages.vue'
 import Account from './components/BottomNav/Account/Account.vue'
 import Job from './components/views/Job/Job.vue'
+import Login from './components/Login/Login.vue'
+import NewFreelancer from './components/Login/Freelancer/NewFreelancer.vue'
+import NewEmployer from './components/Login/Employer/NewEmployer.vue'
+
 
 Vue.use(Router)
 
@@ -13,7 +17,7 @@ export default new Router({
   base: process.env.BASE_URL,
   routes: [
     {
-      path: '/',
+      path: '/home',
       name: 'home',
       component: Home
     },
@@ -36,6 +40,21 @@ export default new Router({
       path: '/job',
       name: 'job',
       component: Job
+    },
+    {
+      path: '/',
+      name: 'login',
+      component: Login
+    },
+    {
+      path: '/new-freelancer',
+      name: 'new-freelancer',
+      component: NewFreelancer
+    },
+    {
+      path: '/new-employer',
+      name: 'new-employer',
+      component: NewEmployer
     },
   ]
 })

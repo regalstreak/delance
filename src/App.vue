@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-bottom-nav :active.sync="bottomNav" app :value="true" fixed>
-      <v-btn color="teal" to="/" flat value="home">
+      <v-btn color="teal" to="/home" flat value="home">
         <span>Home</span>
         <v-icon>home</v-icon>
       </v-btn>

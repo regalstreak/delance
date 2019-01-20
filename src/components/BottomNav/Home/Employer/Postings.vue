@@ -1,6 +1,6 @@
 <template>
   <v-container grid-list-lg>
-    <v-card v-for="n in 10" :key="n" class="mb-2">
+    <v-card :v-for="job in jobs" :key="job" class="mb-2">
       <v-card-title>
         <div class="headline">{{ job.jobTitle }}</div>
       </v-card-title>
@@ -43,7 +43,7 @@
     >
       <v-card tile>
         <v-toolbar card dark color="teal">
-          <v-btn icon dark @click="changeAddProposal(false)">
+          <v-btn dark @click="changeAddProposal(false)">
             <v-icon>close</v-icon>
           </v-btn>
           <v-toolbar-title>Proposal</v-toolbar-title>
@@ -104,10 +104,15 @@
               </v-stepper-content>
 
               <v-stepper-content step="3">
-                <v-select v-model="selectedSkills" :items="skills" label="Skills required" multiple>
-                  <v-list-tile slot="prepend-item" ripple @click="toggle">
+                <v-select
+                  v-model="newJob.jobSkills"
+                  :items="skills"
+                  label="Skills required"
+                  multiple
+                >
+                  <v-list-tile slot="prepend-item" ripple>
                     <v-list-tile-action>
-                      <v-icon :color="selectedSkills.length > 0 ? 'indigo darken-4' : ''">{{ icon }}</v-icon>
+                      <v-icon :color="selectedSkills.length > 0 ? 'indigo darken-4' : ''"></v-icon>
                     </v-list-tile-action>
                   </v-list-tile>
                   <v-divider slot="prepend-item" class="mt-2"></v-divider>
@@ -139,7 +144,7 @@
                 <v-layout align-center justify-center>
                   <v-flex xs6 class="text-xs-center">
                     <font class="headline">Your budget for this job is</font>
-                    <v-text-field v-model="ethBid" prefix="ETH" :suffix="textSuffix"></v-text-field>
+                    <v-text-field v-model="newJob.jobBudget" prefix="ETH"></v-text-field>
                   </v-flex>
                 </v-layout>
 
@@ -159,7 +164,7 @@
                   </v-menu>
                 </div>
 
-                <v-btn color="teal white--text" @click="e1 = 1">Submit</v-btn>
+                <v-btn color="teal white--text" @click="addJob()">Submit</v-btn>
 
                 <v-btn flat @click="e1 = 3">Back</v-btn>
               </v-stepper-content>
@@ -174,6 +179,10 @@
 </template>
 
 <script>
+import { db } from "../../../../main.js";
+import web3 from "../../../../util/getWeb3";
+import { mapState } from "vuex";
+
 export default {
   data() {
     return {
@@ -189,7 +198,7 @@ export default {
         jobFavourited: false,
         jobPaid: false,
         jobDetail: "",
-        jobEmployerId: 123,
+        jobEmployerId: "123",
         jobEmployer: "neil",
         jobEmployerAvatar: "https://cdn.vuetifyjs.com/images/lists/1.jpg",
         jobSkills: [],
@@ -198,6 +207,7 @@ export default {
         jobLookingToHire: 2,
         jobBudget: 0.003
       },
+      ethBid: 0,
       items: [
         { title: "On-Going" },
         { title: "Not Started" },
@@ -246,7 +256,7 @@ export default {
         jobFavourited: false,
         jobPaid: false,
         jobDetail: "",
-        jobEmployerId: 123,
+        jobEmployerId: "123",
         jobEmployer: "neil",
         jobEmployerAvatar: "https://cdn.vuetifyjs.com/images/lists/1.jpg",
         jobSkills: [],
@@ -257,6 +267,11 @@ export default {
       }
     };
   },
+
+  computed: {
+    ...mapState(["jobs"])
+  },
+
   methods: {
     checkFavourite() {
       this.jobFavourited = !this.jobFavourited;
@@ -264,13 +279,81 @@ export default {
     changeAddProposal(n) {
       this.addProposal = n;
     },
-    addJob() {
+    async addJob() {
       this.addProposal = false;
-      
+      let accounts = await web3.eth.getAccounts();
+
+      this.newJob.jobPostDate = new Date().getMonth.toString();
+
+      this.newJob.jobEmployerId = accounts[0];
+
+      db.collection("jobs")
+        .add({
+          jobTitle: this.newJob.jobTitle,
+          jobPaymentMode: this.newJob.jobPaymentMode,
+          jobPostDate: this.newJob.jobPostDate,
+          jobRating: this.newJob.jobRating,
+          jobSkillLevel: this.newJob.jobSkillLevel,
+          jobFavourited: this.newJob.jobFavourited,
+          jobPaid: this.newJob.jobPaid,
+          jobDetail: this.newJob.jobDetail,
+          jobEmployerId: this.newJob.jobEmployerId,
+          jobEmployer: this.newJob.jobEmployer,
+          jobEmployerAvatar: this.newJob.jobEmployerAvatar,
+          jobSkills: this.newJob.jobSkills,
+          jobType: this.newJob.jobType,
+          jobProposals: this.newJob.jobProposals,
+          jobLookingToHire: this.newJob.jobLookingToHire,
+          jobBudget: this.newJob.jobBudget
+        })
+        .then(function() {
+          console.log("Document successfully written!");
+        })
+        .catch(function(error) {
+          console.error("Error writing document: ", error);
+        });
+
+      this.$store.commit("changeAccountInfo", accounts[0].toString());
+
+      db.collection("employers")
+        .doc(accounts[0].toString())
+        .collection("jobs")
+        .add({
+          jobTitle: this.newJob.jobTitle,
+          jobPaymentMode: this.newJob.jobPaymentMode,
+          jobPostDate: this.newJob.jobPostDate,
+          jobRating: this.newJob.jobRating,
+          jobSkillLevel: this.newJob.jobSkillLevel,
+          jobFavourited: this.newJob.jobFavourited,
+          jobPaid: this.newJob.jobPaid,
+          jobDetail: this.newJob.jobDetail,
+          jobEmployerId: this.newJob.jobEmployerId,
+          jobEmployer: this.newJob.jobEmployer,
+          jobEmployerAvatar: this.newJob.jobEmployerAvatar,
+          jobSkills: this.newJob.jobSkills,
+          jobType: this.newJob.jobType,
+          jobProposals: this.newJob.jobProposals,
+          jobLookingToHire: this.newJob.jobLookingToHire,
+          jobBudget: this.newJob.jobBudget
+        })
+        .then(function() {
+          console.log("Document successfully written!");
+        })
+        .catch(function(error) {
+          console.error("Error writing document: ", error);
+        });
     }
+  },
+  async created() {
+    this.$store.dispatch(
+      "setAllEmployerJobsRef",
+      db
+        .collection("employers")
+        .doc("0xc23f3136e6846f12A6a9A143EaE6DaF08f4F76b2")
+        .collection("jobs")
+    );
+    console.log("askdjasdadjasdaskdjasndaskjnaskdjadksajdnasdkjn");
+    console.log(this.jobs);
   }
 };
 </script>
-
-<style>
-</style>
